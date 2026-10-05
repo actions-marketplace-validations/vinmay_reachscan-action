@@ -85,6 +85,31 @@ runs:
         echo "exit-code=$code" >> "$GITHUB_OUTPUT"
         echo "reachscan exit code: $code"
 
+    - name: Report scan notices
+      if: ${{ always() && steps.scan.outputs.sarif-file != '' }}
+      shell: bash
+      env:
+        SARIF_FILE: ${{ steps.scan.outputs.sarif-file }}
+      run: |
+        # Surface SARIF run notifications (e.g. "No entry points detected for
+        # Python; ... N findings not shown") as workflow warnings. reachscan
+        # versions before these notifications simply produce none.
+        python - <<'PY' || true
+        import json, os
+        try:
+            with open(os.environ["SARIF_FILE"], encoding="utf-8") as fh:
+                log = json.load(fh)
+        except (OSError, ValueError):
+            raise SystemExit(0)
+        for run in log.get("runs", []):
+            for invocation in run.get("invocations", []):
+                for note in invocation.get("toolExecutionNotifications", []):
+                    text = note.get("message", {}).get("text", "")
+                    if text:
+                        text = text.replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+                        print(f"::warning title=reachscan::{text}")
+        PY
+
     - name: Upload SARIF
       if: ${{ always() && inputs.sarif == 'true' && steps.scan.outputs.exit-code != '2' && steps.scan.outputs.exit-code != '' }}
       uses: github/codeql-action/upload-sarif@v4

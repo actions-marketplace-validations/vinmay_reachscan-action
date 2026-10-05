@@ -73,6 +73,7 @@ No code scanning (private repos without GitHub Advanced Security):
 - One rule per capability (`reachscan/EXECUTE`, `reachscan/SEND`, ...) and one per combined risk (`reachscan/combined/remote_control`, ...).
 - A reachable high-risk finding is an `error`, a reachable medium-risk finding is a `warning`, and everything else is a `note`.
 - Only findings an LLM entry point can reach (plus code that runs at import) are uploaded, so the Security tab stays focused on what a prompt can trigger.
+- If reachscan finds no entry points for a language, its findings aren't uploaded, and the job shows a warning saying how many were left out (with reachscan versions that report it).
 
 ## How it works
 
