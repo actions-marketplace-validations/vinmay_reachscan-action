@@ -1,5 +1,7 @@
 # reachscan GitHub Action
 
+> Want to check someone else's MCP server before you install it? Use the [reachscan plugin for Claude Code or Codex](https://github.com/vinmay/reachscan#use-it-from-claude-code-or-codex) instead. This action is for scanning your own code in CI.
+
 Runs [reachscan](https://github.com/vinmay/reachscan) on your AI agent or MCP server code. It reports what the code can execute, read, write, and send, and whether an LLM tool handler can reach it. Results go to the GitHub Security tab with the call chain for each reachable finding, and the job fails when a reachable finding meets your severity threshold.
 
 ## Minimal workflow
